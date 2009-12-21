@@ -17,6 +17,9 @@ function phpwExceptionHandler($exception)
 
 function phpwErrorHandler($errno, $errstr, $errfile, $errline)
 {
+    // We use our own error handler simply to remove the "file" information from the messages.
+    // This is not very pretty, I know.
+
     switch ($errno)
     {
         case E_WARNING:
@@ -29,8 +32,18 @@ function phpwErrorHandler($errno, $errstr, $errfile, $errline)
             echo "<br><b>Notice:</b> $errstr on line $errline<br>";
             break;
 
+        case E_STRICT:
+        case E_USER_STRICT:
+            echo "<br><b>Strict Standards:</b> $errstr on line $errline<br>";
+            break;
+
+        case E_DEPRECATED:
+        case E_USER_DEPRECATED:
+            echo "<br><b>PHP Deprecated:</b> $errstr on line $errline<br>";
+            break;
+
         default:
-            echo "<br><b>Error:</b> $errstr on line $errline<br>";
+            echo "<br><b>Error $errno:</b> $errstr on line $errline<br>";
             break;
     }
 
