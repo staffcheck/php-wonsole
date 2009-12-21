@@ -1,0 +1,28 @@
+Version 1.0 (21 December 2009)
+
+PHP Wonsole was created by Christian Davén in 2009 and is
+intended as a replacement for creating temporary PHP files
+to try out or debug some PHP command or function.
+
+You enter your PHP code into your web browser. The code
+is then sent to the web server, stored in a file and executed.
+The output and a variable dump is returned to the browser.
+
+Your code snippets history is also stored in a cookie, so
+that you can try different approaches and "undo" by selecting
+a previous version of your code.
+
+===========================================================
+License
+===========================================================
+
+PHP Wonsole is licensed under the MIT License.
+
+http://www.opensource.org/licenses/mit-license.php
+
+===========================================================
+Contact
+===========================================================
+
+Please email me if you have suggestions for improvements
+or bug fixes: <christian@daven.se>.
