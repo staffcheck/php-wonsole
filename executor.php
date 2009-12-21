@@ -69,7 +69,7 @@ if(isset($_POST['code']))
 }
 
 // If "magic quotes" are enabled for _GET, _POST and _COOKIE variables,
-// our source code will get extra quotes, which will ruin it. (Magic
+// quotes in the source code will be escaped, which will ruin it. (Magic
 // Quotes can be enabled or disabled in php.ini.)
 if(get_magic_quotes_gpc())
     $code = stripslashes($code);
