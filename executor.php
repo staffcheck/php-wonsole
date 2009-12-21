@@ -8,39 +8,32 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-if(!isset($_POST['code']))
-    $_POST['code'] = '';
-
 define('SCRIPT_FILENAME', 'phpw-tempfile.php');
 
 function phpwExceptionHandler($exception)
 {
-    echo '<p>Uncaught exception: '.$exception->getMessage().'</p>';
+    echo "<br><b>Uncaught exception:</b> ".$exception->getMessage()."<br>";
 }
 
 function phpwErrorHandler($errno, $errstr, $errfile, $errline)
 {
     switch ($errno)
     {
-        case E_USER_ERROR:
-            echo "Fatal error on line $errline\n\n";
-            exit(1);
-            break;
-
+        case E_WARNING:
         case E_USER_WARNING:
-            echo "WARNING: [$errno] $errstr on line $errline\n\n";
+            echo "<br><b>Warning:</b> $errstr on line $errline<br>";
             break;
 
+        case E_NOTICE:
         case E_USER_NOTICE:
-            echo "NOTICE: [$errno] $errstr  on line $errline\n\n";
+            echo "<br><b>Notice:</b> $errstr on line $errline<br>";
             break;
 
         default:
-            echo "$errstr on line $errline\n\n";
+            echo "<br><b>Error:</b> $errstr on line $errline<br>";
             break;
     }
 
-    /* Don't execute PHP internal error handler */
     return true;
 }
 
@@ -58,25 +51,44 @@ function phpwPrintREach($vars)
     return join("\n", $str);
 }
 
-header('Content-Type: text/html; charset=UTF-8');
-
 set_exception_handler('phpwExceptionHandler');
 set_error_handler('phpwErrorHandler');
 
+// Make sure we catch errors in snippets!
+ini_set('display_errors', true);
+ini_set('track_errors', false);
+error_reporting(E_ALL | E_STRICT);
+
+header('Content-Type: text/html; charset=UTF-8');
+
+$code = '';
+if(isset($_POST['code']))
+{
+    $code = $_POST['code'];
+    unset($_POST['code']);
+}
+
+// If "magic quotes" are enabled for _GET, _POST and _COOKIE variables,
+// our source code will get extra quotes, which will ruin it. (Magic
+// Quotes can be enabled or disabled in php.ini.)
+if(get_magic_quotes_gpc())
+    $code = stripslashes($code);
+
 $fh = fopen(SCRIPT_FILENAME, 'w+');
 fwrite($fh, "<?php ");
-fwrite($fh, $_POST['code']);
-fwrite($fh, "\n?>");
+fwrite($fh, $code);
+fwrite($fh, " ?>");
 fclose($fh);
 
 unset($fh);
-unset($_POST['code']);
+unset($code);
 
 ob_start();
 require(SCRIPT_FILENAME);
 $__script_output = ob_get_contents();
 ob_end_clean();
 
+// Return output and a variable dump in JSON
 echo json_encode(array(
     'output' => $__script_output,
     'vars' => phpwPrintREach(phpwExcludeVars(get_defined_vars()))
