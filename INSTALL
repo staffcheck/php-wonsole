@@ -1,0 +1,14 @@
+===========================================================
+Installing PHP Wonsole on Windows (Wamp Server)
+===========================================================
+
+1. Extract all files to a new folder "C:\wamp\apps\phpw"
+2. Copy the file "wamp.phpw.conf" to "C:\wamp\alias"
+
+Done! Restart Wamp and visit "http://localhost/phpw".
+
+===========================================================
+Installing PHP Wonsole on other systems
+===========================================================
+
+Sorry, I don't know how. Please let me know if you do.
