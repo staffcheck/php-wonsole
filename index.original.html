@@ -195,9 +195,15 @@ function execute()
         }
         catch(e)
         {
-            r['output'] = data.replace(/^<br ?\/>\n?/, '');
+            r['output'] = data;
             r['vars'] = '';
         }
+
+        // Remove unnecessary whitespace from output
+        r['output'] = $.trim(r['output']);
+        r['output'] = r['output'].replace(/^(<br ?\/?>)+/, '');
+        r['output'] = r['output'].replace(/(<br ?\/?>)+$/, '');
+        r['output'] = r['output'].replace(/<br ?\/?>+/g, '<br>');
 
         if(r['output'].length > 0)
         {
@@ -217,6 +223,8 @@ function execute()
 
         $('#results').show();
         $('#wait').hide();
+
+        $('#code').focus();
     });
 }
 
@@ -230,5 +238,7 @@ $(document).ready(function() {
     var history = getCodeHistory();
     if(history.length > 0)
         $('#code').val(history[0]);
+
+    $('#code').focus();
 });
 </script>
