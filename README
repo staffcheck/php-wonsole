@@ -13,6 +13,16 @@ that you can try different approaches and "undo" by selecting
 a previous version of your code.
 
 ===========================================================
+Requirements
+===========================================================
+
+PHP Wonsole requires a local Apache web server, running PHP 5
+or later.
+
+Most modern web browsers are supported, but if you're using
+Internet Explorer, you'll get a crippled version of PHP Wonsole.
+
+===========================================================
 License
 ===========================================================
 
