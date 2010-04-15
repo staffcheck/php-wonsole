@@ -33,7 +33,6 @@ function phpwErrorHandler($errno, $errstr, $errfile, $errline)
             break;
 
         case E_STRICT:
-        case E_USER_STRICT:
             echo "<br><b>Strict Standards:</b> $errstr on line $errline<br>";
             break;
 
