@@ -41,6 +41,10 @@ function phpwErrorHandler($errno, $errstr, $errfile, $errline)
             echo "<br><b>PHP Deprecated:</b> $errstr on line $errline<br>";
             break;
 
+        case E_RECOVERABLE_ERROR:
+            echo "<br><b>Recoverable Error:</b> $errstr on line $errline<br>";
+            break;
+
         default:
             echo "<br><b>Error $errno:</b> $errstr on line $errline<br>";
             break;
