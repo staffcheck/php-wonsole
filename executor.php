@@ -10,11 +10,13 @@
 
 define('SCRIPT_FILENAME', 'phpw-tempfile.php');
 
+// Show exception message
 function phpwExceptionHandler($exception)
 {
     echo "<br><b>Uncaught exception:</b> ".$exception->getMessage()."<br>";
 }
 
+// Show error message
 function phpwErrorHandler($errno, $errstr, $errfile, $errline)
 {
     // We use our own error handler simply to remove the "file" information from the messages.
@@ -53,11 +55,14 @@ function phpwErrorHandler($errno, $errstr, $errfile, $errline)
     return true;
 }
 
+// Removes some variables from a list of variables. These are default variables in PHP and
+// some variables that are necessary for this script to run, but the user doesn't need to see them.
 function phpwExcludeVars($vars)
 {
     return array_diff_key($vars, array_fill_keys(array('_FILES', '_COOKIE', '_GET', '_POST', '_REQUEST', '_SERVER', '_ENV', 'GLOBALS', '__script_output'), null));
 }
 
+// Call print_r() for each variable to print its contents
 function phpwPrintREach($vars)
 {
     $str = array();
@@ -67,10 +72,9 @@ function phpwPrintREach($vars)
     return join("\n", $str);
 }
 
+// Make sure we catch and show all errors to the user
 set_exception_handler('phpwExceptionHandler');
 set_error_handler('phpwErrorHandler');
-
-// Make sure we catch errors in snippets!
 ini_set('display_errors', true);
 ini_set('track_errors', false);
 error_reporting(E_ALL | E_STRICT);
@@ -90,15 +94,18 @@ if(isset($_POST['code']))
 if(get_magic_quotes_gpc())
     $code = stripslashes($code);
 
+// Open temporary script file and write code
 $fh = fopen(SCRIPT_FILENAME, 'w+');
 fwrite($fh, "<?php ");
 fwrite($fh, $code);
 fwrite($fh, " ?>");
 fclose($fh);
 
+// Unset these variables, so that they won't be shown to the user
 unset($fh);
 unset($code);
 
+// Execute temporary script file
 ob_start();
 require(SCRIPT_FILENAME);
 $__script_output = ob_get_contents();
@@ -110,6 +117,7 @@ echo json_encode(array(
     'vars' => phpwPrintREach(phpwExcludeVars(get_defined_vars()))
 ));
 
+// Delete temporary script file
 @unlink(realpath(SCRIPT_FILENAME));
 
 ?>
