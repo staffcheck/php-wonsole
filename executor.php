@@ -2,7 +2,7 @@
 
 /**
  * PHP Wonsole (web console)
- * Copyright (c) 2009 Christian Davén (http://www.daven.se)
+ * Copyright (c) 2009 Apprikos (http://apprikos.se)
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
