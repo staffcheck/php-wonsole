@@ -19,8 +19,9 @@ Requirements
 PHP Wonsole requires a local Apache web server, running PHP 5
 or later.
 
-Most modern web browsers are supported, but if you're using
-Internet Explorer, you'll get a crippled version of PHP Wonsole.
+The web browser has to support HTML5 localStorage and native
+JSON parsing, so a newer version of Firefox, Chrome, Safari
+or Internet Explorer is required.
 
 ===========================================================
 License
