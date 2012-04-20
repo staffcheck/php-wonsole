@@ -1,4 +1,4 @@
-Version 1.3 (23 May 2010)
+Version 1.5 (20 April, 2012)
 
 PHP Wonsole was created by Christian Davén in 2009 and is
 intended as a replacement for creating temporary PHP files
@@ -8,9 +8,9 @@ You enter your PHP code into your web browser. The code
 is then sent to the web server, stored in a file and executed.
 The output and a variable dump is returned to the browser.
 
-Your code snippets history is also stored in a cookie, so
-that you can try different approaches and "undo" by selecting
-a previous version of your code.
+Your code snippets history is also stored in the browser's
+localStorage, so that you can try different approaches and
+"undo" by selecting a previous version of your code.
 
 ===========================================================
 Requirements
@@ -19,8 +19,8 @@ Requirements
 PHP Wonsole requires a local Apache web server, running PHP 5
 or later.
 
-The web browser has to support HTML5 localStorage and native
-JSON parsing, so a newer version of Firefox, Chrome, Safari
+The web browser has to support HTML5 localStorage, so a
+relatively recent version of Firefox, Chrome, Safari
 or Internet Explorer is required.
 
 ===========================================================
