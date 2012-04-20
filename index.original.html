@@ -81,15 +81,15 @@
         <p id="footer">PHP Wonsole created by <a href="http://apprikos.se">Apprikos</a>.</p>
     </div>
 
-<script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="mootools-core-1.4.5.js"></script>
 
 <script type="text/javascript">
 // Add a code snippet to the history, and remove the oldest snippet if too many are stored
 function addCodeToHistory(code)
 {
     var history = getCodeHistory();
-    if($.inArray(code, history) != -1)
-        return;
+    //if(history.contains(code))
+    //    return;
 
     history.unshift(code);
     if(history.length > 20)
@@ -97,12 +97,11 @@ function addCodeToHistory(code)
 
     try
     {
-        localStorage.setItem('phpw-history', JSON.stringify(history));
+        localStorage.setItem('phpw-history', JSON.encode(history));
     }
     catch (e)
     {
-        if (e == QUOTA_EXCEEDED_ERR)
-            alert('Quota exceeded!');
+        alert(e);
     }
 }
 
@@ -111,7 +110,7 @@ function getCodeHistory()
 {
     var history = localStorage.getItem('phpw-history');
     if(history)
-        return JSON.parse(history);
+        return JSON.decode(history);
     else
         return [];
 }
@@ -120,7 +119,7 @@ function getCodeHistory()
 function updateHistory()
 {
     var history = getCodeHistory();
-    var div = $('#history');
+    var div = $('history');
     var pre = null;
     var a = null;
 
@@ -128,19 +127,24 @@ function updateHistory()
 
     for(var i in history)
     {
-        pre = $('<pre></pre>');
-        a = $('<a></a>');
-        a.text(history[i]);
-        a.attr('href', '#');
-        a.bind('click', function(e){
-            $('#code').val($(this).text());
-            updateLC();
-            execute();
-            return false;
+        a = new Element('a', {
+            href: '#',
+            text: history[i],
+            events: {
+                click: function(evt) {
+                    $('code').value = this.get('text');
+                    updateLC();
+                    execute();
+
+                    evt.stop();
+                }
+            }
         });
 
-        pre.append(a);
-        div.append(pre);
+        pre = $(new Element('pre'));
+
+        pre.grab(a);
+        div.grab(pre);
     }
 }
 
@@ -149,55 +153,43 @@ function updateHistory()
 // is returned and shown to the user.
 function execute()
 {
-    $('#results').hide();
-    $('#wait').show();
+    $$('#results').setStyle('display', 'none');
+    $$('#wait').setStyle('display', 'inline');
 
-    var code = $.trim($('#code').val());
+    var code = $('code').value;
     if(code.length == 0)
         return;
 
     addCodeToHistory(code);
     updateHistory();
 
-    $.post('executor.php', {code:code}, function(data) {
-        var r = {};
-        try
-        {
-            r = JSON.parse(data);
+    var req = new Request.JSON({
+        url: 'executor.php',
+        data: { code: code },
+        onSuccess: function (resp) {
+            if(resp.output.length > 0)
+            {
+                $$('#output').set('html', resp.output);
+                $$('#output-div').setStyle('display', 'block');
+            }
+            else
+                $$('#output-div').setStyle('display', 'none');
+
+            if(resp.vars.length > 0)
+            {
+                $$('#vardump').set('html', resp.vars);
+                $$('#vardump-div').setStyle('display', 'block');
+            }
+            else
+                $$('#vardump-div').setStyle('display', 'none');
+
+            $$('#results').setStyle('display', 'block');
+            $$('#wait').setStyle('display', 'none');
+
+            $('code').focus();
         }
-        catch(e)
-        {
-            r['output'] = data;
-            r['vars'] = '';
-        }
-
-        // Remove unnecessary whitespace from output
-        r['output'] = $.trim(r['output']);
-        r['output'] = r['output'].replace(/^(<br ?\/?>)+/, '');
-        r['output'] = r['output'].replace(/(<br ?\/?>)+$/, '');
-        r['output'] = r['output'].replace(/<br ?\/?>+/g, '<br>');
-
-        if(r['output'].length > 0)
-        {
-            $('#output').html(r['output']);
-            $('#output-div').show();
-        }
-        else
-            $('#output-div').hide();
-
-        if(r['vars'].length > 0)
-        {
-            $('#vardump').html(r['vars']);
-            $('#vardump-div').show();
-        }
-        else
-            $('#vardump-div').hide();
-
-        $('#results').show();
-        $('#wait').hide();
-
-        $('#code').focus();
-    });
+    })
+    req.send();
 }
 
 // Update line and column counters
@@ -206,34 +198,35 @@ function updateLC()
     if(!browserHasSelectionStart)
         return;
 
-    var ta = $('#code')[0];
+    var ta = $('code');
     var lines = ta.value.substring(0, ta.selectionStart).split('\n');
 
-    $('#line-no').text(lines.length);
-    $('#col-no').text(lines.pop().length + 1);
+    $$('#line-no').set('text', lines.length);
+    $$('#col-no').set('text', lines.pop().length + 1);
 }
 
 var browserHasSelectionStart;
 
-$(document).ready(function() {
+window.addEvent('domready', function() {
     // Since it is difficult to get selectionStart and selectionEnd in IE,
     // we test if the browser has these attributes and remove some functionality
     // from the Wonsole if it doesn't.
-    browserHasSelectionStart = typeof $('#code')[0].selectionStart !== 'undefined';
+    browserHasSelectionStart = typeof $('code').selectionStart !== 'undefined';
     if(browserHasSelectionStart)
-        $('#counters').show();
+        $$('#counters').setStyle('display', 'block');
 
     updateHistory();
     var history = getCodeHistory();
     if(history.length > 0)
-        $('#code').val(history[0]);
+        $$('#code').set('value', history[0]);
 
-    $('#code').keydown(function(event) {
-        if(event.keyCode === 13 && event.ctrlKey) // Ctrl+Enter
+    $('code').addEvent('keydown', function(evt) {
+        if(evt.control && evt.key === 'enter') // Ctrl+Enter
         {
+            evt.stop();
             execute();
         }
-        else if(event.keyCode === 9 && browserHasSelectionStart) // Tab
+        else if(evt.key === 'tab' && browserHasSelectionStart) // Tab
         {
             var myValue = "    ";
 
@@ -244,15 +237,13 @@ $(document).ready(function() {
             this.selectionStart = startPos + myValue.length;
             this.selectionEnd = startPos + myValue.length;
 
-            event.preventDefault();
+            evt.stop();
         }
-
-        return true;
     });
-    $('#code').keyup(updateLC);
-    $('#code').mouseup(updateLC);
+    $('code').addEvent('keyup', updateLC);
+    $('code').addEvent('mouseup', updateLC);
 
-    $('#code').focus();
+    $('code').focus();
     updateLC();
 
     // Remove old cookie used in previous versions
