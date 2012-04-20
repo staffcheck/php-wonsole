@@ -10,6 +10,8 @@
 
 define('SCRIPT_FILENAME', 'phpw-tempfile.php');
 
+require 'TVarDumper.php';
+
 // Show exception message
 function phpwExceptionHandler($exception)
 {
@@ -67,7 +69,9 @@ function phpwPrintREach($vars)
 {
     $str = array();
     foreach($vars as $key => $val)
-        $str[] = "<b>$key:</b> ".print_r($val, true);
+    {
+        $str[] = "<b>$key:</b> ".TVarDumper::dump($val);
+    }
 
     return join("\n", $str);
 }
