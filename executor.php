@@ -61,7 +61,23 @@ function phpwErrorHandler($errno, $errstr, $errfile, $errline)
 // some variables that are necessary for this script to run, but the user doesn't need to see them.
 function phpwExcludeVars($vars)
 {
-    return array_diff_key($vars, array_fill_keys(array('_FILES', '_COOKIE', '_GET', '_POST', '_REQUEST', '_SERVER', '_ENV', 'GLOBALS', '__script_output'), null));
+    return array_diff_key($vars, array_fill_keys(array(
+        '__script_output',
+        '_FILES',
+        '_COOKIE',
+        '_GET',
+        '_POST',
+        '_REQUEST',
+        '_SERVER',
+        '_ENV',
+        'GLOBALS',
+        'HTTP_ENV_VARS',
+        'HTTP_POST_VARS',
+        'HTTP_GET_VARS',
+        'HTTP_COOKIE_VARS',
+        'HTTP_SERVER_VARS',
+        'HTTP_POST_FILES',
+    ), null));
 }
 
 // Call print_r() for each variable to print its contents
